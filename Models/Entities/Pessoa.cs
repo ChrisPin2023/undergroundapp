@@ -4,10 +4,16 @@ using System.Linq;
 using System.Threading.Tasks;
 using Models.Entities;
 
-namespace underground.api.Models.Entities
+namespace Models.Entities
 {
     public class Pessoa : Base
     {
+        public Pessoa()
+        {
+            Contactos = new HashSet<Contacto>();
+        }
+        // Propriedades da tabela pessoa
+        
 
         public string NomePessoa { get; set; }
         public string NumIdentificao { get; set; }
@@ -22,8 +28,12 @@ namespace underground.api.Models.Entities
         public Guid NaturalidadeId { get; set; }
 
         // relaciomanetos - cardinalidades
-        public List <Contacto> Contactos;
-        public virtual Endereco Endereco { get; set; }    
+        public IEnumerable <Contacto> Contactos;
+        public virtual Endereco Endereco { get; set; }  
+        public virtual Dador? Dador { get; set; } 
+        public virtual Medico? Medico { get; set; } 
+        public virtual Tecnico? Tecnico { get; set; }
+        public virtual Paciente? Paciente { get; set; }  
 
     }
 }
