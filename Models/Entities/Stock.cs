@@ -16,7 +16,7 @@ namespace Models.Entities
         [MaxLength(30, ErrorMessage ="Limite de caracteres excedido")]
 
         // chaves estrangeiras
-        public Guid SaidaId { get; set; }
+        //public Guid SaidaId { get; set; }
 
         // relacionamento - cardinalidades
         public virtual Saida Saida { get; set; }

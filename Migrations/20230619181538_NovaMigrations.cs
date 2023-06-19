@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace underground.api.Migrations
 {
     /// <inheritdoc />
-    public partial class DatabaseInit : Migration
+    public partial class NovaMigrations : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -27,22 +27,6 @@ namespace underground.api.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Tb_Endereco", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Tb_Entrada",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Qtd = table.Column<int>(type: "int", nullable: false),
-                    Gsanguineo = table.Column<string>(type: "nvarchar(5)", maxLength: 5, nullable: true),
-                    Tipo = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: true),
-                    DataCadastro = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DataRevisao = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Tb_Entrada", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -77,6 +61,24 @@ namespace underground.api.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Tb_Naturalidade", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Tb_Stock",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    DataEntrada = table.Column<DateTime>(type: "datetime2", maxLength: 8, nullable: false),
+                    DataSaida = table.Column<DateTime>(type: "datetime2", maxLength: 8, nullable: false),
+                    QtdEntrada = table.Column<int>(type: "int", nullable: false),
+                    QtdSaida = table.Column<int>(type: "int", maxLength: 30, nullable: false),
+                    QtdMinima = table.Column<int>(type: "int", maxLength: 30, nullable: false),
+                    DataCadastro = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DataRevisao = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Tb_Stock", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -131,28 +133,6 @@ namespace underground.api.Migrations
                         name: "FK_Tb_Pessoa_Tb_Naturalidade_NaturalidadeId",
                         column: x => x.NaturalidadeId,
                         principalTable: "Tb_Naturalidade",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Tb_Saida",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    QtdBolsas = table.Column<int>(type: "int", maxLength: 15, nullable: false),
-                    PedidoId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Quantidade = table.Column<int>(type: "int", nullable: false),
-                    DataCadastro = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DataRevisao = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Tb_Saida", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Tb_Saida_Tb_Pedido_PedidoId",
-                        column: x => x.PedidoId,
-                        principalTable: "Tb_Pedido",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -279,26 +259,67 @@ namespace underground.api.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Tb_Stock",
+                name: "Tb_Saida",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    DataEntrada = table.Column<DateTime>(type: "datetime2", maxLength: 8, nullable: false),
-                    DataSaida = table.Column<DateTime>(type: "datetime2", maxLength: 8, nullable: false),
-                    QtdEntrada = table.Column<int>(type: "int", nullable: false),
-                    QtdSaida = table.Column<int>(type: "int", maxLength: 30, nullable: false),
-                    QtdMinima = table.Column<int>(type: "int", maxLength: 30, nullable: false),
-                    SaidaId = table.Column<Guid>(type: "uniqueidentifier", maxLength: 30, nullable: false),
+                    QtdBolsas = table.Column<int>(type: "int", maxLength: 15, nullable: false),
+                    PedidoId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Quantidade = table.Column<int>(type: "int", nullable: false),
+                    StockId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    MedicoId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     DataCadastro = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     DataRevisao = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Tb_Stock", x => x.Id);
+                    table.PrimaryKey("PK_Tb_Saida", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Tb_Stock_Tb_Saida_SaidaId",
-                        column: x => x.SaidaId,
-                        principalTable: "Tb_Saida",
+                        name: "FK_Tb_Saida_Tb_Medico_MedicoId",
+                        column: x => x.MedicoId,
+                        principalTable: "Tb_Medico",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Tb_Saida_Tb_Pedido_PedidoId",
+                        column: x => x.PedidoId,
+                        principalTable: "Tb_Pedido",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Tb_Saida_Tb_Stock_StockId",
+                        column: x => x.StockId,
+                        principalTable: "Tb_Stock",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Tb_Entrada",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Qtd = table.Column<int>(type: "int", nullable: false),
+                    Gsanguineo = table.Column<string>(type: "nvarchar(5)", maxLength: 5, nullable: true),
+                    Tipo = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: true),
+                    StockId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TecnicoId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    DataCadastro = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DataRevisao = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Tb_Entrada", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Tb_Entrada_Tb_Stock_StockId",
+                        column: x => x.StockId,
+                        principalTable: "Tb_Stock",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Tb_Entrada_Tb_Tecnico_TecnicoId",
+                        column: x => x.TecnicoId,
+                        principalTable: "Tb_Tecnico",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -313,6 +334,16 @@ namespace underground.api.Migrations
                 table: "Tb_Dador",
                 column: "PessoaId",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tb_Entrada_StockId",
+                table: "Tb_Entrada",
+                column: "StockId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tb_Entrada_TecnicoId",
+                table: "Tb_Entrada",
+                column: "TecnicoId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Tb_Medico_PessoaId",
@@ -347,14 +378,19 @@ namespace underground.api.Migrations
                 column: "NaturalidadeId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Tb_Saida_MedicoId",
+                table: "Tb_Saida",
+                column: "MedicoId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Tb_Saida_PedidoId",
                 table: "Tb_Saida",
                 column: "PedidoId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tb_Stock_SaidaId",
-                table: "Tb_Stock",
-                column: "SaidaId",
+                name: "IX_Tb_Saida_StockId",
+                table: "Tb_Saida",
+                column: "StockId",
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -377,34 +413,34 @@ namespace underground.api.Migrations
                 name: "Tb_Entrada");
 
             migrationBuilder.DropTable(
-                name: "Tb_Medico");
-
-            migrationBuilder.DropTable(
                 name: "Tb_Paciente");
-
-            migrationBuilder.DropTable(
-                name: "Tb_Stock");
-
-            migrationBuilder.DropTable(
-                name: "Tb_Tecnico");
 
             migrationBuilder.DropTable(
                 name: "Tb_Saida");
 
             migrationBuilder.DropTable(
-                name: "Tb_Pessoa");
+                name: "Tb_Tecnico");
+
+            migrationBuilder.DropTable(
+                name: "Tb_Medico");
 
             migrationBuilder.DropTable(
                 name: "Tb_Pedido");
+
+            migrationBuilder.DropTable(
+                name: "Tb_Stock");
+
+            migrationBuilder.DropTable(
+                name: "Tb_Pessoa");
+
+            migrationBuilder.DropTable(
+                name: "Tb_Hospital");
 
             migrationBuilder.DropTable(
                 name: "Tb_Endereco");
 
             migrationBuilder.DropTable(
                 name: "Tb_Naturalidade");
-
-            migrationBuilder.DropTable(
-                name: "Tb_Hospital");
         }
     }
 }

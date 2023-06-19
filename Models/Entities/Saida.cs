@@ -10,10 +10,13 @@ namespace Models.Entities
         // chaves estrangeiras
         public Guid PedidoId { get; set; }
         public int Quantidade { get; set; }
+        public Guid StockId {get; set; }
+        public Guid MedicoId { get; set; }
 
         //cardinalidades
         public virtual Pedido Pedido { get; set; } 
         public virtual Stock Stock { get; set; } 
+        public Medico Medico { get; set; }
 
 
     }

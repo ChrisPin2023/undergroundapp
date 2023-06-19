@@ -12,8 +12,8 @@ using Models.DataBase;
 namespace underground.api.Migrations
 {
     [DbContext(typeof(UndergroundDbContext))]
-    [Migration("20230616193630_DatabaseInit")]
-    partial class DatabaseInit
+    [Migration("20230619181538_NovaMigrations")]
+    partial class NovaMigrations
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -158,11 +158,21 @@ namespace underground.api.Migrations
                     b.Property<int>("Qtd")
                         .HasColumnType("int");
 
+                    b.Property<Guid>("StockId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("TecnicoId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Tipo")
                         .HasMaxLength(15)
                         .HasColumnType("nvarchar(15)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("StockId");
+
+                    b.HasIndex("TecnicoId");
 
                     b.ToTable("Tb_Entrada");
                 });
@@ -392,6 +402,9 @@ namespace underground.api.Migrations
                     b.Property<string>("DataRevisao")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid>("MedicoId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("PedidoId")
                         .HasColumnType("uniqueidentifier");
 
@@ -402,9 +415,17 @@ namespace underground.api.Migrations
                     b.Property<int>("Quantidade")
                         .HasColumnType("int");
 
+                    b.Property<Guid>("StockId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
 
+                    b.HasIndex("MedicoId");
+
                     b.HasIndex("PedidoId");
+
+                    b.HasIndex("StockId")
+                        .IsUnique();
 
                     b.ToTable("Tb_Saida");
                 });
@@ -440,14 +461,7 @@ namespace underground.api.Migrations
                         .HasMaxLength(30)
                         .HasColumnType("int");
 
-                    b.Property<Guid>("SaidaId")
-                        .HasMaxLength(30)
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("SaidaId")
-                        .IsUnique();
 
                     b.ToTable("Tb_Stock");
                 });
@@ -503,6 +517,25 @@ namespace underground.api.Migrations
                         .IsRequired();
 
                     b.Navigation("Pessoa");
+                });
+
+            modelBuilder.Entity("Models.Entities.Entrada", b =>
+                {
+                    b.HasOne("Models.Entities.Stock", "Stock")
+                        .WithMany()
+                        .HasForeignKey("StockId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Models.Entities.Tecnico", "Tecnico")
+                        .WithMany()
+                        .HasForeignKey("TecnicoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Stock");
+
+                    b.Navigation("Tecnico");
                 });
 
             modelBuilder.Entity("Models.Entities.Medico", b =>
@@ -565,24 +598,29 @@ namespace underground.api.Migrations
 
             modelBuilder.Entity("Models.Entities.Saida", b =>
                 {
+                    b.HasOne("Models.Entities.Medico", "Medico")
+                        .WithMany()
+                        .HasForeignKey("MedicoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Models.Entities.Pedido", "Pedido")
                         .WithMany()
                         .HasForeignKey("PedidoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Pedido");
-                });
-
-            modelBuilder.Entity("Models.Entities.Stock", b =>
-                {
-                    b.HasOne("Models.Entities.Saida", "Saida")
-                        .WithOne("Stock")
-                        .HasForeignKey("Models.Entities.Stock", "SaidaId")
+                    b.HasOne("Models.Entities.Stock", "Stock")
+                        .WithOne("Saida")
+                        .HasForeignKey("Models.Entities.Saida", "StockId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Saida");
+                    b.Navigation("Medico");
+
+                    b.Navigation("Pedido");
+
+                    b.Navigation("Stock");
                 });
 
             modelBuilder.Entity("Models.Entities.Tecnico", b =>
@@ -624,9 +662,9 @@ namespace underground.api.Migrations
                     b.Navigation("Tecnico");
                 });
 
-            modelBuilder.Entity("Models.Entities.Saida", b =>
+            modelBuilder.Entity("Models.Entities.Stock", b =>
                 {
-                    b.Navigation("Stock");
+                    b.Navigation("Saida");
                 });
 #pragma warning restore 612, 618
         }
