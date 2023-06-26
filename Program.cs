@@ -1,5 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Models.DataBase;
+using Models.Interfaces;
+using Services.Clients;
+using Services.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +16,8 @@ builder.Services.AddSwaggerGen();
 // di para tempo de vida do db context
 // builder.Services.AddSingleton<UndergroundDbContext>();
 
+// configuaração para o acesso ao banco de dados sql server por meio de 
+// injecao de dependencia
 var sqlCnn = builder.Configuration.GetConnectionString("underground");
     builder.Services.AddDbContext<UndergroundDbContext>(options =>
         options.UseSqlServer(sqlCnn)
@@ -21,6 +26,15 @@ var sqlCnn = builder.Configuration.GetConnectionString("underground");
             .EnableThreadSafetyChecks()
         );
 
+// DI PARA O CICLIO DE VIDA DO HOSPITAL
+builder.Services.AddTransient<IHospital, HospitalRepo>();
+builder.Services.AddScoped(typeof(HospitalClient), typeof(HospitalClient));
+
+// DI PARA O MEDICO
+
+// DI PARA O TECNICO
+
+//DI PARA O PEDIDO
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
